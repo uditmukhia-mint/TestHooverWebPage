@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parts Finder &amp; Support Library | Hoover Demo</title>
+  <link rel="stylesheet" href="https://use.typekit.net/rgx4zhh.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #bb0321; --red-dk: #700214;
+      --navy: #262e60; 
+      --ink: #2b2e33; --muted: #40454d;
+      --grey-1: #f3f3f4; --grey-2: #fafafb; --line: #e7e7e7;
+      --body: "avenir-next-lt-pro", "Avenir Next", Arial, sans-serif;
+      --heading: "neulis-neue", "avenir-next-lt-pro", Arial, sans-serif;
+    }
+    body { font-family: var(--body); color: var(--ink); background: #fff; line-height: 1.4; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+    svg { display: block; }
+
+    /* Announcement bar */
+    .announce { background: var(--red); color: #fff; text-align: center; font-size: 0.95rem; font-weight: 700; padding: 14px 16px; display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+
+    /* Header */
+    header.main { background: #fff; position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); }
+    .bar { max-width: 1512px; margin: 0 auto; padding: 0 32px; min-height: 88px; display: flex; align-items: center; gap: 40px; }
+    .logo img { height: 52px; width: auto; }
+    .nav { display: flex; gap: 32px; font-size: 1rem; font-weight: 700; color: #2e2f30; }
+    .nav a { padding: 8px 0; border-bottom: 2px solid transparent; }
+    .nav a:hover { border-bottom-color: var(--red); }
+    .nav a.sale { color: var(--red); }
+    .icons { margin-left: auto; display: flex; gap: 10px; }
+    .pill { width: 44px; height: 44px; border-radius: 999px; border: 1px solid #f3f3f4; background: #fff; display: grid; place-items: center; color: #2e2f30; }
+    .pill:hover { background: var(--grey-1); }
+    .pill svg { width: 22px; height: 22px; }
+
+    /* Hero */
+    .hero { max-width: 1512px; margin: 0 auto; padding: 72px 32px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; min-height: 560px; }
+    .hero-copy { display: grid; justify-items: center; gap: 32px; text-align: center; }
+    .intro { max-width: 560px; }
+    h1, .sec h2 { font-family: var(--heading); color: var(--navy); font-size: clamp(40px, 3.45vw, 52px); line-height: 1; letter-spacing: -.03em; font-weight: 800; }
+    .intro p { margin-top: 16px; color: var(--navy); font-size: 20px; font-weight: 700; line-height: 1.2; }
+    .msearch { display: grid; grid-template-columns: minmax(220px, 374px) 64px; gap: 12px; justify-content: center; align-items: start; }
+    .msearch input { width: 100%; height: 64px; border: 1px solid #f1f3f6; border-radius: 999px; padding: 0 32px; font: inherit; font-size: 16px; font-weight: 600; color: var(--ink); box-shadow: 0 14px 32px #262e6014; text-transform: uppercase; }
+    .msearch input::placeholder { color: #8f97a3; text-transform: none; }
+    .msearch input:focus { outline: 2px solid var(--navy); }
+    .msearch .go { width: 64px; height: 64px; border: 0; border-radius: 999px; background: var(--red); color: #fff; display: grid; place-items: center; cursor: pointer; transition: transform .2s; }
+    .msearch .go:hover { transform: translateX(2px); }
+    .msearch .go svg { width: 24px; height: 24px; }
+    .msearch .help { grid-column: 1; justify-self: center; border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--ink); text-decoration: underline; cursor: pointer; }
+    .hero-media { border-radius: 24px; background: var(--grey-1); overflow: hidden; min-height: 316px; }
+    .hero-media img { width: 100%; height: 100%; min-height: 316px; object-fit: cover; }
+
+    /* Account banner */
+    .acct { background: var(--red); color: #fff; }
+    .acct-in { max-width: 1512px; margin: 0 auto; padding: 0 32px; min-height: 80px; display: flex; align-items: center; justify-content: center; gap: 48px; }
+    .acct h2 { font-size: 20px; line-height: 1.2; font-weight: 700; }
+    .acct-actions { display: flex; align-items: center; }
+    .sbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 20px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
+    .sbtn.primary { background: var(--red); color: #fff; }
+    .sbtn.primary:hover { background: var(--red-dk); }
+    .acct .sbtn.primary { background: #fff; color: var(--red); }
+    .acct .sbtn.primary:hover { background: var(--grey-1); }
+
+    /* Sections */
+    .sec { max-width: 1512px; margin: 0 auto; padding: 64px 32px; }
+    .sec-head { text-align: center; }
+    .sec-head h2 { color: var(--ink); font-size: clamp(32px, 2.91vw, 44px); }
+    .sec-head p { max-width: 860px; margin: 16px auto 0; color: var(--muted); font-size: 16px; }
+    .topics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 32px; }
+    .topic-group h3 { text-align: center; font-size: 20px; line-height: 1.2; margin-bottom: 24px; }
+    .topic-items { display: grid; gap: 24px; }
+    .topic-card { display: grid; grid-template-columns: 24px 1fr 48px; align-items: center; gap: 12px; min-height: 72px; padding: 12px 24px; border-radius: 16px; background: var(--grey-2); }
+    .ti { color: var(--navy); } .ti svg { width: 24px; height: 24px; }
+    .tt { font-size: 20px; font-weight: 700; line-height: 1.2; }
+    .ta { width: 48px; height: 48px; border-radius: 999px; background: #fff; color: var(--navy); display: grid; place-items: center; transition: transform .2s; }
+    .ta svg { width: 20px; height: 20px; }
+    .topic-card:hover .ta { transform: translateX(2px); }
+
+    .contact { padding-top: 6px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 32px; }
+    .ccard { display: grid; justify-items: center; gap: 12px; min-height: 137px; padding: 24px; border-radius: 16px; background: var(--grey-2); text-align: center; }
+    .ccard h3 { font-size: 20px; line-height: 1.2; }
+    .ccard a, .ccard p { color: var(--muted); font-size: 16px; }
+    .ccard a { color: var(--muted); }
+    .chat { text-align: center; margin-top: 32px; }
+
+    /* Footer */
+    .perks { background: var(--red); color: #fff; border-radius: 16px; max-width: 1448px; margin: 64px 32px 32px; min-height: 64px; display: flex; align-items: center; justify-content: space-around; gap: 24px; flex-wrap: wrap; padding: 16px; font-size: 20px; font-weight: 600; text-align: center; }
+    footer { background: #fff; color: #454648; padding: 0 0 32px; }
+    .foot-in { max-width: 1512px; margin: 0 auto; padding: 0 32px; }
+    .foot-grid { background: var(--grey-1); border-radius: 24px; padding: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-bottom: 32px; }
+    .foot-grid h4 { font-size: 16px; line-height: 20px; font-weight: 600; color: #2e2f30; margin-bottom: 24px; }
+    .foot-grid a { display: block; padding: 2px 0; margin-bottom: 14px; font-size: 16px; font-weight: 500; line-height: 20px; color: #2e2f30; }
+    .foot-grid a:hover { text-decoration: underline; }
+    .foot-bottom { font-size: 14px; color: #454648; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+    @media (max-width: 989px) {
+      .nav { display: none; }
+      .bar { padding: 0 16px; min-height: 72px; }
+      .logo img { height: 40px; }
+      .hero { display: flex; flex-direction: column-reverse; gap: 24px; min-height: 0; padding: 32px 16px 0; }
+      .hero-media { width: 100%; min-height: 184px; border-radius: 16px; }
+      .hero-media img { min-height: 184px; }
+      h1 { font-size: 40px; line-height: 1.2; }
+      .intro p { font-size: 16px; }
+      .msearch { grid-template-columns: minmax(0, 257px) 44px; }
+      .msearch input, .msearch .go { height: 44px; } .msearch .go { width: 44px; }
+      .msearch input { padding: 0 24px; font-size: 14px; }
+      .acct-in { flex-direction: column; gap: 12px; padding: 16px; text-align: center; }
+      .sec { padding: 48px 16px 0; }
+      .sec-head h2 { font-size: 32px; line-height: 1.25; }
+      .topics, .contact-grid, .foot-grid { grid-template-columns: 1fr; }
+      .announce { gap: 16px; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="announce"><span>Free Shipping on Orders Over $99</span><span>30 Day Free Returns</span><span>Flexible Payments</span></div>
+
+  <header class="main">
+    <div class="bar">
+      <a class="logo" href="./"><img src="Hoover_Logo.svg.webp" alt="Hoover - Home" /></a>
+      <nav><ul class="nav"><li><a href="#">Vacuums</a></li><li><a href="#">Carpet Cleaners</a></li><li><a href="#">Spot Cleaners</a></li><li><a href="#">Hard Floor Cleaners</a></li><li><a href="#">Solutions</a></li><li><a href="#">Accessories</a></li><li><a href="#" class="sale">Sale</a></li></ul></nav>
+      <div class="icons">
+        <a class="pill" href="#" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
+        <a class="pill" href="#" aria-label="Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
+        <a class="pill" href="#" aria-label="Cart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 12h-11z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="intro">
+          <h1>How can we help?</h1>
+          <p>If you need help with a product, the easiest and fastest way to get started is to search by the model number.</p>
+        </div>
+        <form class="msearch" onsubmit="return false" aria-label="Search by model number">
+          <input type="search" placeholder="Search by Model Number" autocomplete="off" aria-label="Search by model number" />
+          <button class="go" type="submit" aria-label="Search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></button>
+          <button class="help" type="button">Help me find my model number</button>
+        </form>
+      </div>
+      <div class="hero-media"><img src="https://hoover.com/cdn/shop/files/how-can-we-help.png?v=1783965448&width=1400" alt="" /></div>
+    </section>
+
+    <div class="acct">
+      <div class="acct-in">
+        <h2>Login or create an account for personalized support</h2>
+        <div class="acct-actions"><a class="sbtn primary" href="#">Login</a><a class="sbtn" href="#">Create account</a></div>
+      </div>
+    </div>
+
+    <section class="sec">
+      <div class="sec-head"><h2>Popular topics</h2><p>Get quick and easy answers to the most common support topics</p></div>
+      <div class="topics">
+        <div class="topic-group"><h3>Product Support</h3><div class="topic-items">
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 4v16"/></svg></span><span class="tt">Find product manual</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg></span><span class="tt">Watch how-to videos</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><span class="tt">Register a product</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="tt">Find a service center</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+        </div></div>
+        <div class="topic-group"><h3>My Account</h3><div class="topic-items">
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg></span><span class="tt">Track an order</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></span><span class="tt">Initiate a return</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg></span><span class="tt">Report an order issue</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="tt">Update marketing preferences</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+        </div></div>
+        <div class="topic-group"><h3>Policy Information</h3><div class="topic-items">
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><span class="tt">Warranty information</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg></span><span class="tt">SDS &amp; Ingredient List</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg></span><span class="tt">Vacuum Safe Powders</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+          <a class="topic-card" href="#"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-9 5-14 15-14 0 10-5 15-14 15"/><path d="M5 19l8-8"/></svg></span><span class="tt">Battery Recycling Program</span><span class="ta"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span></a>
+        </div></div>
+      </div>
+    </section>
+
+    <section class="sec contact">
+      <div class="sec-head"><h2>Need additional support?</h2></div>
+      <div class="contact-grid">
+        <div class="ccard"><h3>US Residential</h3><a href="#">+1 877-816-2058</a><p>9am-5pm EST Mon-Fri</p></div>
+        <div class="ccard"><h3>US Commercial</h3><a href="#">+1 888-768-2014</a><p>9am-5pm EST Mon-Fri</p></div>
+        <div class="ccard"><h3>Canada</h3><a href="#">+1 800-944-9200</a><p>9am-7:30pm EST Mon-Fri</p></div>
+      </div>
+      <div class="chat"><a class="sbtn primary" href="#" onclick="openChat(event)">Chat with us</a></div>
+    </section>
+  </main>
+
+  <div class="perks"><span>Fast &amp; Free Shipping $99+</span><span>30 Day Free Returns</span><span>Flexible Payments</span><span>Top-Notch Support</span></div>
+  <footer>
+    <div class="foot-in">
+      <div class="foot-grid">
+        <div><h4>Products</h4><a href="#">Vacuums</a><a href="#">Carpet Cleaners</a><a href="#">Spot Cleaners</a><a href="#">Hard Floor Cleaners</a><a href="#">Batteries &amp; Chargers</a><a href="#">Solutions &amp; Powders</a><a href="#">Commercial</a></div>
+        <div><h4>Support</h4><a href="#">Get Help</a><a href="#">Order Issues</a><a href="#">Product Manuals</a><a href="#">Check Order Status</a><a href="#">Return Product</a><a href="#">Product Registration</a><a href="#">SDS And Ingredient List</a><a href="#">Vacuum Safe</a><a href="#">Find A Service Center</a><a href="#">Battery Recycling Program</a></div>
+        <div><h4>Our Company</h4><a href="#">About Hoover</a><a href="#">Careers</a><a href="#">Hoover Canada</a><a href="#">Terms &amp; Privacy Policy</a><a href="#">Hoover Commercial</a><a href="#">Do Not Sell My Personal Information</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 Techtronic Floor Care Technology Limited. All Rights Reserved. Privacy Policy · Terms of Service · Shipping Policy</span>
+        <span>Demo site for testing purposes only. Not the official Hoover website.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Opens the Salesforce chat window from the "Chat with us" button
+    function openChat(e) {
+      e.preventDefault();
+      try { embeddedservice_bootstrap.utilAPI.launchChat(); } catch (err) { console.error(err); }
+    }
+  </script>
+
+  <!-- ══════════════════════════════════════════
+       Salesforce Embedded Messaging (Agentforce)
+  ══════════════════════════════════════════ -->
+  <script type='text/javascript'>
+    function initEmbeddedMessaging() {
+      try {
+        embeddedservice_bootstrap.settings.language = 'en_US';
+        embeddedservice_bootstrap.init(
+          '00Dfj00000krMeD',
+          'Help_Agent_Service_Deployment',
+          'https://orgfarm-96d8cfce89-dev-ed.develop.my.site.com/ESWHelpAgentSer1793026861059',
+          {
+            scrt2URL: 'https://orgfarm-96d8cfce89-dev-ed.develop.my.salesforce-scrt.com'
+          }
+        );
+      } catch (err) {
+        console.error('Error loading Embedded Messaging: ', err);
+      }
+    };
+  </script>
+  <script type='text/javascript'
+    src='https://orgfarm-96d8cfce89-dev-ed.develop.my.site.com/ESWHelpAgentSer1793026861059/assets/js/bootstrap.min.js'
+    onload='initEmbeddedMessaging()'>
+  </script>
+
+</body>
+</html>
